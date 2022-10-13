@@ -19,11 +19,11 @@ library(tidyverse)
 
 # Introduction
 
-The growth of the insurance industry is fueled by societal expectations for protection against a variety of risks associated with unfavorable random events that have a large economic impact. Insurance is a process that involves the payment of a premium in exchange for an equitable manner of offsetting the risk of a potential future loss. The basic idea is to set up a fund to which insured members contribute specified sums of premium for specific loss levels. When the random events that policyholders are protected against occur giving rise to claims then claims are settled from the fund.
+The growth of the insurance industry is fueled by societal expectations for protection against a variety of risks associated with unfavorable random events that have a large economic impact. Insurance is a process that involves the payment of a premium in exchange for an equitable manner of offsetting the risk of a potential future loss. The basic idea is to set up a fund to which insured members contribute specified sums of premium for specific loss levels. When the random events that policyholders are protected against occur, this gives rise to claims which are then settled from the fund.
 
-The maximum likelihood (MLE) technique is commonly used by insurance firms to estimate claim distribution parameters. Maximum likelihood techniques are typically applied to complete data sets where we have exact values for all of the data points; however, data is rarely perfect in real life. When modeling the underlying loss variable, insurance contracts have coverage adjustments that must be taken into account. Typically, loss control methods like deductibles, policy limitations, and coinsurance are implemented to reduce undesirable policyholder behavioral effects such as adverse selection.
+The Maximum Likelihood Estimation (MLE) technique is commonly used by insurance firms to estimate claim distribution parameters. Maximum likelihood techniques are typically applied to complete data sets where we have exact values for all of the data points; however, data is rarely perfect in real life. When modeling the underlying loss variable, insurance contracts have coverage adjustments that must be taken into account. Typically, loss control methods such as deductibles, policy limits, and coinsurance are implemented to reduce undesirable policyholder behavioral effects such as adverse selection.
 
-Estimation by method of moments and maximum likelihood are often easy to do, but these estimators tend to perform poorly, mainly because they use a few features of the data rather than the entire set of observations. It is important to use as much information as possible when the population has a heavy tail as in insurance data. This project discusses some considerations for properly handling truncated and censored data for modeling of insurance data. The methods to be discussed in this study are Maximum Likelihood Estimations and the EM Algorithm.
+Estimation by method of moments and maximum likelihood are often easy to do, but these estimators tend to perform poorly, mainly because they use a few features of the data rather than the entire set of observations. It is important to use as much information as possible when the population has a heavy tail as in insurance data. This paper discusses some considerations for properly handling truncated and censored data for modeling of insurance data. The methods to be discussed are Maximum Likelihood Estimations and the EM Algorithm.
 
 # Methodology 
 
@@ -37,7 +37,7 @@ Insurance contracts have coverage modifications that need to be considered when 
 Incomplete data in the form of truncation occurs when an observation is not recorded due to that observation being below or above a certain threshold. In practice these are referred to as left truncation and right truncation respectively. A common example of left truncation that arises in practice when working with insurance data is with ordinary insurance deductibles.  
 
 ### Left Truncation
-An observation is left truncated at d if it is not recorded when less than or equal to  d and recorded at the observed value if the observation is greater than $d$. Let $X$ be a random variable representing the size of loss and $L$ be a random variable representing the recorded value. Mathematically, left truncation would be represented as:
+An observation is left truncated at $d$ if it is not recorded when less than or equal to  $d$ and recorded at the observed value if the observation is greater than $d$. Let $X$ be a random variable representing the size of loss and $L$ be a random variable representing the recorded value. Mathematically, left truncation would be represented as:
 
 $$
 L =
@@ -47,15 +47,15 @@ x &:x> d
 \end{cases}
 $$
 The likelihood function is 
-$$P(x|x>d) = f(x)/S(d)$$ 
-where $S(.) = 1- F(.)$ 
+$$f(x|x>d) = f(x)/S(d)$$ 
+where $S(\cdot) = 1- F(\cdot)$ 
 There are a variety of ways that insurance deductibles operate, but with ordinary insurance deductibles there is no incentive for policyholders to report losses less than the deductible amount to the insurance company.  In this situation, the insurer’s data is left truncated for these losses which would be paid by the policyholder and not recorded in the insurer’s data systems. 
 
 ## Censoring
 Incomplete data in the form of censoring occurs when the observation is recorded at a fixed value if it is below or above a certain threshold. In practice this is referred to as left censoring and right censoring respectively. The right censoring situation arises frequently when working with policy limits in insurance data. 
 
 ### Right Censoring
-An observation is right censored at u if it is recorded at its observed value if less than u and recorded at u if the observed value is greater than or equal to u. Let X be a random variable representing the size of loss and L be a random variable representing the recorded value. Mathematically, right censoring would be represented as:
+An observation is right censored at $u$ if it is recorded at its observed value if less than $u$ and recorded at $u$ if the observed value is greater than or equal to $u$. Let $X$ be a random variable representing the size of loss and $L$ be a random variable representing the recorded value. Mathematically, right censoring would be represented as:
 
 $$
 L =
@@ -68,7 +68,7 @@ $$ f(x|u) = F_X(u) + S_X(u)$$
 
 It is common for an insurance policy to have a limit which is the maximum amount that the insurer will pay under the terms of the insurance agreement. In situations where the actual damages exceed the limits of the policy, the payment from the insurer will be limited to the policy limit and the loss will be considered right censored.
 
-The derivation of the estimator for the parameter through the maximum likelihood approach. 
+The derivation of the estimator for the parameter through the maximum likelihood approach is as follows: 
 
 - Likelihood function 
 
@@ -86,14 +86,12 @@ The derivation of the estimator for the parameter through the maximum likelihood
 \end{align*}
 
 - The estimator 
-$$\hat{\theta} = \frac{\sum_{i=1}^{n+c}(x_i - d_i)}{n}$$
+$$\hat{\theta}_{MLE} = \frac{\sum_{i=1}^{n+c}(x_i - d_i)}{n}$$
 
 
 # Application
 
-We are given the following information about a group of policies:
-
-Assume payments at the policy limit resulted from losses above the maximum covered loss.
+To demonstrate how the methods described in the previous section is used in the insurance industry, We are given the information in Table 1 about a group of policies and assume payments at the policy limit resulted from losses above the maximum covered loss.
 
 ```{r, echo=FALSE, fig.pos='H', out.extra=""}
 data <- data.frame(Claim.Payment = c(30, 50,80,120,150), Deductible = c(0, 10, 10, 20, 30),
@@ -102,7 +100,7 @@ kable(data, caption = "Insurance Claims payments with deductibles and policy lim
   kable_styling(position = "center",
                 latex_options = "HOLD_position")
 ```
-We are given that the losses follow the exponential distribution. The aim is to determine the likelihood function and the maximum likehood of the mean losses assuming that the losses are independent.
+We also will assume that the losses follow the exponential distribution. The aim is to determine the likelihood function and the maximum likelihood estimate of the mean losses assuming that the losses are independent.
 
 ```{r, echo=FALSE, fig.pos='H', out.extra=""}
 data1 <- data.frame(Loss.Payment = c(30, 60,90,140,"180+"), Deductible = c(0, 10, 10, 20, 30),
@@ -127,7 +125,7 @@ $$-4\theta + 430 = 0$$
 $$4\theta = 430$$
 $$\theta = \frac{430}{4} = 107.5$$
 
-Now we check if $\theta$ is the maximum
+Now we check if $\theta$ is the maximum.
 
 $$\frac{d^2}{d\theta^2}\ell (\theta|x) = \frac{4}{\theta^2}-\frac{860}{\theta^3}$$
 $$\frac{d^2}{d\theta^2}\ell (\theta|x) = \frac{4}{107.5^2}-\frac{860}{107.5^3} = - 0.000346 < 0$$
@@ -135,7 +133,7 @@ Hence, $\hat{\theta}_{MLE} = 107.5$
 
 **Alternatively**
 
-$\hat{\theta}_{MLE}$ for an exponential is distribution is given by
+$\hat{\theta}_{MLE}$ for an exponential distribution is given by
 
 $$\hat{\theta}_{MLE} = \frac{\sum_{i=1}^{n+c} (x_i - d_i)}{n}$$
 $$\hat{\theta}_{MLE} =\frac{30+50+80+120+150}{4} = 107.5$$
@@ -143,7 +141,7 @@ Where;
 
 $n =$ number of uncensored data
 $c =$ number of censored data points
-$x_i =$ observed value, or censoring point, or censored data
+$x_i =$ observed loss value, or censoring point, or censored data
 $d_i=$ truncated point
 
 ```{r}
@@ -165,7 +163,6 @@ exponential.likelihood <- function(payment, theta){
   plot <- data %>%
     ggplot(aes(x = theta, y = likelihood)) +
     geom_point()+
-    geom_smooth() +
     xlim(0,1000) +
     ylim(-30000,0)
  return(plot)   
@@ -215,7 +212,7 @@ To begin, note that a random sample for the exponential family has a complete su
 
 $$E \left(\sum_{x_i \in \mathbf{y}} y_i + \sum_{x_i \in \mathbf{l}}l_i + \sum_{x_i \in \mathbf{r}} r_i\right)$$
 
-Now, we need to estimate or censored data, $l_i$ and $r_i$. To do this, we will use the memoryless property of the exponential distribution to get $l_i =  \min\{\theta^{(p-1)},c_{(1,i)}\} \text{ and } r_i = c_{(1,i)} + \theta^{(p-1)}$.
+Now, we need to estimate our censored data, $l_i$ and $r_i$. To do this, we will use the memoryless property of the exponential distribution to get $l_i =  \min\{\theta^{(p-1)},c_{(1,i)}\} \text{ and } r_i = c_{(1,i)} + \theta^{(p-1)}$.
 
 Note that $$\begin{aligned}
 E(l_i) &= \frac{\int_0^{c_{(1,i)}} \min\{\theta^{(p-1)},c_{(1,i)}\}  \frac{1}{\theta^{(p-1)}}e^{-x_i/\theta^{(p-1)}} \, dx_i}
